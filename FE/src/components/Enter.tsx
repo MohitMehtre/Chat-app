@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ShinyButton } from "./ShinyButton";
+import { easeIn, easeInOut, motion } from "motion/react";
 
 function Enter() {
   const [name, setName] = useState("");
@@ -97,6 +98,26 @@ function Enter() {
     navigate(`/chat/${roomId}`);
   }
 
+  const shakeAnimation = {
+    x: [0, -6, 6, -6, 6, 0],
+    scale: [1, 1.02, 1],
+  };
+
+  const shakeTransition = {
+    duration: 0.35,
+    easing: easeInOut,
+  };
+
+  const fallAnimation = {
+    y: [0, 70, 1000],
+    rotate: [0, 4, 100],
+  };
+
+  const fallTransition = {
+    duration: 0.6,
+    easing: easeIn,
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-black px-4 overflow-hidden">
       {isWarmingUp && (
@@ -113,15 +134,21 @@ function Enter() {
         </div>
       )}
 
-      <div
-        className={`w-full max-w-md bg-white rounded-2xl p-6 shadow-xl z-10 transition 
+      <motion.div
+        className={`w-full max-w-md bg-white rounded-2xl p-6 shadow-xl z-10 
           ${
-            hasFallen
-              ? "animate-fall"
-              : showError
-                ? "border-2 border-red-500 animate-shake ring-2 ring-red-400/40"
-                : "border border-transparent"
+            showError && !hasFallen
+              ? "border-2 border-red-500 ring-2 ring-red-400/40"
+              : "border border-transparent"
           }`}
+        animate={
+          hasFallen
+            ? fallAnimation
+            : showError
+              ? shakeAnimation
+              : { x: 0, y: 0, rotate: 0, opacity: 1 }
+        }
+        transition={hasFallen ? fallTransition : shakeTransition}
       >
         <form
           onSubmit={(e) => {
@@ -175,7 +202,7 @@ function Enter() {
             </p>
           )}
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 }
