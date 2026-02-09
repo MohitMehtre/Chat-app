@@ -6,6 +6,12 @@ interface Message {
   message: string;
   sender: string;
   timestamp: string;
+  file?: {
+    name: string;
+    type: string;
+    data: string;
+    size?: number;
+  };
 }
 
 const WS_URL = import.meta.env.VITE_WS_URL;
@@ -17,6 +23,7 @@ function Chat() {
   const wsRef = useRef<WebSocket | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [users, setUsers] = useState<string[]>([]);
@@ -97,6 +104,39 @@ function Chat() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !wsRef.current || wsRef.current.readyState !== 1) return;
+
+    // Optional: Max size check (e.g., 2MB to prevent WS choke)
+    if (file.size > 2 * 1024 * 1024) {
+      alert("File is too large (max 2MB)");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      wsRef.current?.send(
+        JSON.stringify({
+          type: "chat",
+          payload: {
+            message: "",
+            file: {
+              name: file.name,
+              type: file.type,
+              size: file.size,
+              data: result,
+            },
+          },
+        }),
+      );
+    };
+    reader.readAsDataURL(file);
+
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   const sendMessage = (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -221,9 +261,8 @@ function Chat() {
             </h2>
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider opacity-70">
               <span
-                className={`w-3 h-3 border-2 border-black rounded-full ${
-                  isConnected ? "bg-green-500" : "bg-red-500"
-                }`}
+                className={`w-3 h-3 border-2 border-black rounded-full ${isConnected ? "bg-green-500" : "bg-red-500"
+                  }`}
               />
               {isConnected ? "Connected" : "Disconnected"}
             </div>
@@ -330,14 +369,53 @@ function Chat() {
                     <div
                       className={`
                         p-4 text-sm font-bold border-2 border-black dark:border-white transition-all duration-300
-                        ${
-                          isMe
-                            ? "bg-black dark:bg-yellow-400 text-white dark:text-black shadow-[4px_4px_0_#888] dark:shadow-[4px_4px_0_#fff]"
-                            : "bg-white dark:bg-zinc-800 text-black dark:text-white shadow-[4px_4px_0_#000] dark:shadow-[4px_4px_0_#facc15]"
+                        ${isMe
+                          ? "bg-black dark:bg-yellow-400 text-white dark:text-black shadow-[4px_4px_0_#888] dark:shadow-[4px_4px_0_#fff]"
+                          : "bg-white dark:bg-zinc-800 text-black dark:text-white shadow-[4px_4px_0_#000] dark:shadow-[4px_4px_0_#facc15]"
                         }
                       `}
                     >
-                      {m.message}
+                      {m.file ? (
+                        <div className="flex flex-col gap-2">
+                          {m.file.type.startsWith("image/") ? (
+                            <img
+                              src={m.file.data}
+                              alt={m.file.name}
+                              className="max-w-full max-h-60 rounded-sm border border-black/10 dark:border-white/10"
+                            />
+                          ) : (
+                            <a
+                              href={m.file.data}
+                              download={m.file.name}
+                              className="flex items-center gap-2 underline underline-offset-2 break-all text-sm"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                                <polyline points="14 2 14 8 20 8" />
+                              </svg>
+                              {m.file.name}
+                            </a>
+                          )}
+                          {/* If there is a caption message with the file */}
+                          {m.message && (
+                            <div className="mt-1 wrap-break-word">
+                              {m.message}
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="wrap-break-word">{m.message}</div>
+                      )}
                     </div>
 
                     <span className="text-[10px] font-mono font-bold mt-1 opacity-40 px-1">
@@ -358,6 +436,32 @@ function Chat() {
           onSubmit={sendMessage}
           className="p-4 md:p-6 bg-white dark:bg-zinc-900 border-t-4 border-black dark:border-white flex gap-3 md:gap-4 shrink-0 transition-colors duration-300"
         >
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
+            onChange={handleFileSelect}
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="bg-white dark:bg-zinc-800 text-black dark:text-white border-4 border-black dark:border-white p-3 font-bold shadow-[4px_4px_0_#000] dark:shadow-[4px_4px_0_#facc15] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_#000] dark:hover:shadow-[2px_2px_0_#facc15] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all cursor-pointer flex items-center justify-center"
+            title="Attach file"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+            </svg>
+          </button>
           <input
             autoFocus
             value={input}
