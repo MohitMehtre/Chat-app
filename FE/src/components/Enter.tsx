@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { easeIn, easeInOut, motion } from "motion/react";
+import { ThemeToggle } from "./ThemeToggle";
 
 function Enter() {
   const [name, setName] = useState("");
@@ -118,12 +119,15 @@ function Enter() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f5f0e8] px-4 overflow-hidden relative">
+    <div className="min-h-screen flex items-center justify-center bg-[#f5f0e8] dark:bg-zinc-950 px-4 overflow-hidden relative transition-colors duration-300">
+      <div className="absolute top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
       {/* Decorative background elements - Non-overlapping layout */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         {/* Top Left: Sun Burst */}
         <svg
-          className="absolute -top-16 -left-16 w-64 h-64 text-black/5 animate-[spin_12s_linear_infinite]"
+          className="absolute -top-16 -left-16 w-64 h-64 text-black/5 dark:text-white/5 animate-[spin_12s_linear_infinite]"
           viewBox="0 0 100 100"
           fill="currentColor"
         >
@@ -132,7 +136,7 @@ function Enter() {
 
         {/* Top Right: Abstract Blob */}
         <svg
-          className="absolute -top-20 -right-20 w-80 h-80 text-black/4"
+          className="absolute -top-20 -right-20 w-80 h-80 text-black/4 dark:text-white/5"
           viewBox="0 0 200 200"
           fill="currentColor"
         >
@@ -145,13 +149,13 @@ function Enter() {
         {/* Middle Right: Plus Signs */}
         <div className="absolute top-1/3 right-12 flex flex-col gap-8">
           <div
-            className="text-6xl font-black text-black/5 animate-pulse"
+            className="text-6xl font-black text-black/5 dark:text-white/5 animate-pulse"
             style={{ animationDuration: "3s" }}
           >
             +
           </div>
           <div
-            className="text-4xl font-black text-black/5 animate-bounce ml-8"
+            className="text-4xl font-black text-black/5 dark:text-white/5 animate-bounce ml-8"
             style={{ animationDuration: "4s" }}
           >
             +
@@ -160,7 +164,7 @@ function Enter() {
 
         {/* Middle Left: Static Squiggle */}
         <svg
-          className="absolute top-1/3 left-8 w-16 h-48 text-black/5"
+          className="absolute top-1/3 left-8 w-16 h-48 text-black/5 dark:text-white/5"
           viewBox="0 0 50 200"
           fill="none"
           stroke="currentColor"
@@ -179,14 +183,14 @@ function Enter() {
 
         {/* Rotating Triangles */}
         <svg
-          className="absolute top-1/4 left-1/4 w-16 h-16 text-black/5 animate-[spin_8s_linear_infinite]"
+          className="absolute top-1/4 left-1/4 w-16 h-16 text-black/5 dark:text-white/5 animate-[spin_8s_linear_infinite]"
           viewBox="0 0 24 24"
           fill="currentColor"
         >
           <path d="M12 2L2 22H22L12 2Z" />
         </svg>
         <svg
-          className="absolute bottom-1/4 right-1/3 w-20 h-20 text-black/5 animate-[spin_12s_reverse_linear_infinite]"
+          className="absolute bottom-1/4 right-1/3 w-20 h-20 text-black/5 dark:text-white/5 animate-[spin_12s_reverse_linear_infinite]"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -196,10 +200,10 @@ function Enter() {
         </svg>
 
         {/* Bottom Right: Spinning Dashed Circle */}
-        <div className="absolute -bottom-32 -right-32 w-96 h-96 border-4 border-dashed border-black/5 rounded-full animate-[spin_20s_linear_infinite]" />
+        <div className="absolute -bottom-32 -right-32 w-96 h-96 border-4 border-dashed border-black/5 dark:border-white/5 rounded-full animate-[spin_20s_linear_infinite]" />
 
         {/* Top Center: Hashtag */}
-        <div className="absolute top-8 left-1/2 -ml-64 text-8xl font-black text-black/2 -rotate-12 select-none">
+        <div className="absolute top-8 left-1/2 -ml-64 text-8xl font-black text-black/2 dark:text-white/2 -rotate-12 select-none">
           #
         </div>
 
@@ -217,27 +221,29 @@ function Enter() {
         <div className="fixed inset-0 bg-[#f5f0e8]/90 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="text-center">
             <div
-              className="inline-block border-4 border-black px-8 py-6 bg-white"
-              style={{ boxShadow: "6px 6px 0 #000" }}
+              className="inline-block border-4 border-black dark:border-white px-8 py-6 bg-white dark:bg-zinc-900"
+              style={{ boxShadow: "6px 6px 0 var(--shadow-color)" }}
             >
               <div className="flex items-center gap-3 mb-4">
                 <div
-                  className="w-3 h-3 bg-black animate-bounce"
+                  className="w-3 h-3 bg-black dark:bg-white animate-bounce"
                   style={{ animationDelay: "0ms" }}
                 />
                 <div
-                  className="w-3 h-3 bg-black animate-bounce"
+                  className="w-3 h-3 bg-black dark:bg-white animate-bounce"
                   style={{ animationDelay: "150ms" }}
                 />
                 <div
-                  className="w-3 h-3 bg-black animate-bounce"
+                  className="w-3 h-3 bg-black dark:bg-white animate-bounce"
                   style={{ animationDelay: "300ms" }}
                 />
               </div>
-              <p className="font-bold text-black uppercase tracking-wider text-sm">
+              <p className="font-bold text-black dark:text-white uppercase tracking-wider text-sm">
                 {seconds < 5 ? "Connecting..." : "Almost there"}
               </p>
-              <p className="text-black/50 text-xs mt-1 font-mono">{seconds}s</p>
+              <p className="text-black/50 dark:text-white/50 text-xs mt-1 font-mono">
+                {seconds}s
+              </p>
             </div>
           </div>
         </div>
@@ -256,12 +262,11 @@ function Enter() {
       >
         {/* Main card */}
         <div
-          className={`bg-white border-4 border-black ${showError && !hasFallen ? "border-red-600" : ""}`}
-          style={{ boxShadow: "8px 8px 0 #000" }}
+          className={`bg-white dark:bg-zinc-900 border-4 border-black dark:border-white ${showError && !hasFallen ? "border-red-600 dark:border-red-400" : ""} shadow-[8px_8px_0_#000] dark:shadow-[8px_8px_0_#facc15]`}
         >
           <div className="grid md:grid-cols-5">
             {/* Left Column: Branding */}
-            <div className="md:col-span-2 bg-yellow-300 p-8 border-b-4 md:border-b-0 md:border-r-4 border-black flex flex-col justify-between relative overflow-hidden">
+            <div className="md:col-span-2 bg-yellow-300 p-8 border-b-4 md:border-b-0 md:border-r-4 border-black dark:border-white flex flex-col justify-between relative overflow-hidden transition-colors duration-300">
               <div
                 className="absolute inset-0 opacity-10"
                 style={{
@@ -279,7 +284,8 @@ function Enter() {
                     height="24"
                     viewBox="0 0 24 24"
                     fill="none"
-                    stroke="white"
+                    stroke="currentColor"
+                    className="text-white"
                     strokeWidth="3"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -287,12 +293,12 @@ function Enter() {
                     <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
                   </svg>
                 </div>
-                <h1 className="text-4xl font-black uppercase tracking-tighter leading-none mb-2">
+                <h1 className="text-4xl font-black uppercase tracking-tighter leading-none mb-2 text-black">
                   Chat
                   <br />
                   Room
                 </h1>
-                <p className="font-bold text-sm opacity-60">
+                <p className="font-bold text-sm opacity-60 text-black">
                   Connect. Talk. Vanish.
                 </p>
               </div>
@@ -305,7 +311,7 @@ function Enter() {
             </div>
 
             {/* Right Column: Form */}
-            <div className="md:col-span-3 p-8 md:p-10 bg-white">
+            <div className="md:col-span-3 p-8 md:p-10 bg-white dark:bg-zinc-900 transition-colors duration-300">
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -315,7 +321,7 @@ function Enter() {
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="space-y-2">
-                    <label className="block text-xs font-bold uppercase tracking-wider">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-black dark:text-white">
                       Name <span className="text-red-600">*</span>
                     </label>
                     <input
@@ -324,12 +330,12 @@ function Enter() {
                       placeholder="who are you?"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full border-2 border-black px-4 py-3 text-sm font-medium placeholder:text-black/30 outline-none focus:bg-yellow-50 transition-colors"
+                      className="w-full bg-white dark:bg-zinc-800 text-black dark:text-white border-2 border-black dark:border-white px-4 py-3 text-sm font-medium placeholder:text-black/30 dark:placeholder:text-white/30 outline-none focus:bg-yellow-50 dark:focus:bg-zinc-700 transition-colors shadow-none focus:shadow-[4px_4px_0_#000] dark:focus:shadow-[4px_4px_0_#facc15]"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="block text-xs font-bold uppercase tracking-wider">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-black dark:text-white">
                       Room ID <span className="text-red-600">*</span>
                     </label>
                     <input
@@ -338,15 +344,15 @@ function Enter() {
                       placeholder="room-name"
                       value={roomId}
                       onChange={(e) => setRoomId(e.target.value)}
-                      className="w-full border-2 border-black px-4 py-3 text-sm font-medium placeholder:text-black/30 outline-none focus:bg-yellow-50 transition-colors"
+                      className="w-full bg-white dark:bg-zinc-800 text-black dark:text-white border-2 border-black dark:border-white px-4 py-3 text-sm font-medium placeholder:text-black/30 dark:placeholder:text-white/30 outline-none focus:bg-yellow-50 dark:focus:bg-zinc-700 transition-colors shadow-none focus:shadow-[4px_4px_0_#000] dark:focus:shadow-[4px_4px_0_#facc15]"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="block text-xs font-bold uppercase tracking-wider">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-black dark:text-white">
                     Password{" "}
-                    <span className="text-black/30 normal-case font-normal">
+                    <span className="text-black/30 dark:text-white/30 normal-case font-normal">
                       (optional)
                     </span>
                   </label>
@@ -355,15 +361,14 @@ function Enter() {
                     placeholder="••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full border-2 border-black px-4 py-3 text-sm font-medium placeholder:text-black/30 outline-none focus:bg-yellow-50 transition-colors"
+                    className="w-full bg-white dark:bg-zinc-800 text-black dark:text-white border-2 border-black dark:border-white px-4 py-3 text-sm font-medium placeholder:text-black/30 dark:placeholder:text-white/30 outline-none focus:bg-yellow-50 dark:focus:bg-zinc-700 transition-colors shadow-none focus:shadow-[4px_4px_0_#000] dark:focus:shadow-[4px_4px_0_#facc15]"
                   />
                 </div>
 
                 <div className="pt-2">
                   <button
                     type="submit"
-                    className="w-full bg-black text-white font-bold uppercase tracking-wider py-4 border-4 border-black hover:bg-white hover:text-black transition-all duration-300 cursor-pointer flex items-center justify-center gap-3 group"
-                    style={{ boxShadow: "4px 4px 0 #000" }}
+                    className="w-full bg-black dark:bg-yellow-400 text-white dark:text-black font-bold uppercase tracking-wider py-4 border-4 border-black dark:border-white hover:bg-white hover:text-black dark:hover:bg-yellow-300 transition-all duration-300 cursor-pointer flex items-center justify-center gap-3 group shadow-[4px_4px_0_#000] dark:shadow-[4px_4px_0_#fff]"
                   >
                     <span>Enter Room</span>
                     <svg
@@ -394,7 +399,7 @@ function Enter() {
           </div>
         </div>
 
-        <p className="text-center text-xs text-black/40 mt-6 font-medium">
+        <p className="text-center text-xs text-black/40 dark:text-white/40 mt-6 font-medium">
           NO ACCOUNT NEEDED • JUST JUMP IN
         </p>
       </motion.div>
